@@ -82,7 +82,7 @@ def analyze():
         classification = "UNKNOWN... Please try again."
 
     anomaly_score = model_isol.decision_function(features_scaled)[0]
-    anomaly_explanation = "This cell appears to be normal: features extracted follow our standard deviation" if anomaly_score >= 0 else "This cell appears to be POTENTIALLY ANOMALOUS: features extracted do not follow our standard deviation"
+    anomaly_explanation = "Normal" if anomaly_score >= 0 else "Potentially Anomalous"
 
     exp = lime_explainer.explain_instance(features_scaled[0], model_xgb.predict_proba, num_features=15935)
     lime_explanation = exp.as_list()
