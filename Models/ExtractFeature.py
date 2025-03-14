@@ -10,14 +10,9 @@ warnings.filterwarnings('ignore')
 
 class FeatureExtractor:
     def __init__(self):
-        # You can initialize parameters here if needed.
         pass
 
-    # --------------------------
-    # Segmentation Function
-    # --------------------------
     def segment_cell(self, image, sigma=1, median_size=3, min_size=50, hole_area=50):
-        # Import necessary modules locally.
         from skimage import color, filters, morphology, measure
         from skimage.filters import gaussian, median
 
@@ -25,7 +20,7 @@ class FeatureExtractor:
         smooth_image = gaussian(gray_image, sigma=sigma)
         smooth_image = median(smooth_image)
         thresh = filters.threshold_otsu(smooth_image)
-        mask = smooth_image < thresh  # assuming cell is darker; adjust if needed
+        mask = smooth_image < thresh
         mask = morphology.remove_small_objects(mask, min_size=min_size)
         mask = morphology.remove_small_holes(mask, area_threshold=hole_area)
         labels = measure.label(mask)
@@ -36,12 +31,8 @@ class FeatureExtractor:
         segmented = image.copy()
         segmented[~mask] = 0
         return segmented, mask
-
-    # --------------------------
-    # Existing Feature Extractors
-    # --------------------------
+    
     def extract_color_histogram(self, image, num_bins=8):
-        # Local import isn't strictly necessary here if globals work, but can be added for consistency.
         from skimage import color
         features = {}
         channels = ['R', 'G', 'B']
@@ -108,9 +99,6 @@ class FeatureExtractor:
                 features[key_std] = std_val
         return features
 
-    # --------------------------
-    # Additional Feature Extractors
-    # --------------------------
     def extract_hu_moments(self, mask):
         from skimage import measure
         moments = measure.moments(mask.astype(float))
@@ -154,9 +142,6 @@ class FeatureExtractor:
             features[f"haralick_{prop}"] = np.mean(feat)
         return features
 
-    # --------------------------
-    # Combined Feature Extraction Dictionary
-    # --------------------------
     def extract_features_dict(self, image):
         segmented, mask = self.segment_cell(image)
         features = {}
@@ -172,7 +157,6 @@ class FeatureExtractor:
         features.update(self.extract_haralick_features(segmented))
         return features
 
-# If running this file directly, create an instance and save it in the Models folder.
 if __name__ == "__main__":
     extractor = FeatureExtractor()
 
