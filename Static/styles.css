@@ -1,0 +1,8 @@
+h1 {
+    font-weight: bold;
+}
+
+#loading-message {
+    display: none;
+    margin-top: 20px;
+  }

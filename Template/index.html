@@ -1,16 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Blood Cell Analysis</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+  <meta charset="UTF-8">
+  <title>Blood Cell Analysis</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Blood Cell Analysis</h1>
-    <form action="{{ url_for('analyze') }}" method="post" enctype="multipart/form-data">
-        <label for="file">Upload an image of a blood cell:</label><br>
-        <input type="file" name="file" id="file" accept="image/*" required><br><br>
-        <button type="submit">Analyze</button>
-    </form>
+  <div class="container">
+    <div class="row justify-content-center mt-5">
+      <div class="col-md-8 text-center">
+        <h1 class="mb-4">Blood Cell Analysis</h1>
+        <br>
+        <p>Upload an image of a blood cell to analyze it.</p>
+        <br>
+        <form id="upload-form" action="{{ url_for('analyze') }}" method="post" enctype="multipart/form-data">
+          <div class="custom-file mb-3">
+            <input type="file" class="custom-file-input" id="file" name="file" accept="image/*" required>
+            <label class="custom-file-label" for="file">Choose image</label>
+          </div>
+          <br>
+          <button type="submit" id="analyze-btn" class="btn btn-primary btn-lg w-100">Analyze Cell</button>
+        </form>
+        <br>
+        <div id="loading-message" class="alert">
+          <span class="spinner-border spinner-border-sm"></span>
+          &nbsp; Processing, please wait...
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Bootstrap JS and dependencies -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- JavaScript to update the custom file input label and show a loading message on form submission -->
+  <script>
+    $(".custom-file-input").on("change", function() {
+      var fileName = $(this).val().split("\\").pop();
+      $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+    });
+    
+    // Show loading message when form is submitted
+    $("#upload-form").on("submit", function() {
+      $("#analyze-btn").prop("disabled", true);
+      $("#loading-message").show();
+    });
+  </script>
 </body>
 </html>

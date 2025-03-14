@@ -1,28 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Analysis Result</title>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+  <meta charset="UTF-8">
+  <title>Analysis Result</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
-    <h1>Analysis Result</h1>
-    <div class="result-container">
-        <div class="image-container">
-            <h2>Uploaded Image</h2>
-            <img src="{{ url_for('static', filename='uploads/' + image_file) }}" alt="Uploaded Image" width="300">
-        </div>
-        <div class="details-container">
-            <h2>Prediction</h2>
-            <p><strong>Classification:</strong> {{ classification }}</p>
-            <h2>Anomaly Score</h2>
-            <p><strong>Score:</strong> {{ anomaly_score }}</p>
-            <p>{{ anomaly_explanation }}</p>
-            <h2>LIME Explanation (Top 10 Features)</h2>
-            <pre>{{ lime_explanation }}</pre>
-        </div>
+  <div class="container mt-5">
+    <h1 class="mb-4">Analysis Result</h1>
+    <br>
+    <div class="row">
+      <div class="col-md-6">
+        <h3>Uploaded Image</h3>
+        <img src="{{ url_for('static', filename='uploads/' + image_file) }}" alt="Uploaded Image" class="img-fluid">
+      </div>
+      <div class="col-md-6">
+        <h3>Details</h3>
+        <p><strong>Classification:</strong> {{ classification }}</p>
+        <p><strong>Anomaly Score:</strong> {{ anomaly_score }}</p>
+        <p>{{ anomaly_explanation }}</p>
+        <h4>Feature Contributions</h4>
+        <pre>{{ lime_explanation }}</pre>
+      </div>
     </div>
     <br>
-    <a href="{{ url_for('index') }}">Analyze another image</a>
+    <div class="mt-4">
+      <a href="{{ url_for('index') }}" class="btn btn-secondary">Analyze another image</a>
+    </div>
+  </div>
+  
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

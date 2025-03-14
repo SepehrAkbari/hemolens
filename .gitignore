@@ -17,3 +17,7 @@ Data/bloodcells_dataset_cleaned/neutrophil/*
 Data/bloodcells_dataset_cleaned/platelet/*
 
 Data/bloodcells_dataset_cleaned_features.csv
+
+Static/uploads/*
+
+*.pyc
