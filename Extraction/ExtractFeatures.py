@@ -14,15 +14,12 @@ import mahotas
 
 warnings.filterwarnings('ignore')
 
-# --------------------------
-# Segmentation Function
-# --------------------------
 def segment_cell(image, sigma=1, median_size=3, min_size=50, hole_area=50):
     gray_image = color.rgb2gray(image)
     smooth_image = gaussian(gray_image, sigma=sigma)
     smooth_image = median(smooth_image)
     thresh = filters.threshold_otsu(smooth_image)
-    mask = smooth_image < thresh  # assuming cell is darker; adjust if needed
+    mask = smooth_image < thresh
     mask = morphology.remove_small_objects(mask, min_size=min_size)
     mask = morphology.remove_small_holes(mask, area_threshold=hole_area)
     labels = measure.label(mask)
@@ -34,12 +31,8 @@ def segment_cell(image, sigma=1, median_size=3, min_size=50, hole_area=50):
     segmented[~mask] = 0
     return segmented, mask
 
-# --------------------------
-# Existing Feature Extractors
-# --------------------------
 def extract_color_histogram(image, num_bins=8):
     chans = []
-    # We'll build a dictionary with keys for each channel and bin.
     features = {}
     channels = ['R', 'G', 'B']
     for i in range(3):
@@ -81,12 +74,6 @@ def extract_gabor_features(image, frequency=0.6):
     return features
 
 def extract_gist_features_with_keys(image, num_blocks=1, frequencies=[0.1, 0.3], thetas=[0, np.pi/2]):
-    """
-    Optimized simplified GIST descriptor:
-      - Uses fewer frequencies and orientations.
-      - Uses a 1x1 grid (global statistics) to reduce computational cost.
-    Returns a dictionary with descriptive keys.
-    """
     gray = color.rgb2gray(image)
     h, w = gray.shape
     block_h = math.floor(h / num_blocks)
@@ -96,7 +83,6 @@ def extract_gist_features_with_keys(image, num_blocks=1, frequencies=[0.1, 0.3],
     for freq in frequencies:
         for theta in thetas:
             filt_real, _ = gabor(gray, frequency=freq, theta=theta)
-            # Global mean and std since num_blocks==1 (or you could still use a small grid)
             mean_val = np.mean(filt_real)
             std_val = np.std(filt_real)
             key_mean = f"gist_f{freq}_t{theta}_global_mean"
@@ -105,13 +91,7 @@ def extract_gist_features_with_keys(image, num_blocks=1, frequencies=[0.1, 0.3],
             features[key_std] = std_val
     return features
 
-# --------------------------
-# Additional Feature Extractors
-# --------------------------
 def extract_hu_moments(mask):
-    """
-    Compute Hu Moments from the binary mask.
-    """
     moments = measure.moments(mask.astype(float))
     hu = measure.moments_hu(moments)
     features = {}
@@ -120,25 +100,16 @@ def extract_hu_moments(mask):
     return features
 
 def extract_zernike_moments(mask, radius, degree_list=[2, 4]):
-    """
-    Compute Zernike moments using mahotas.
-    Uses fewer degrees to reduce computation.
-    """
     features = {}
     mask_uint8 = (mask * 255).astype(np.uint8)
     center = (mask.shape[0] // 2, mask.shape[1] // 2)
     
     for degree in degree_list:
-        # Compute the Zernike moments vector using mahotas.
         zm_vector = mahotas.features.zernike_moments(mask_uint8, radius, degree, center)
         features[f"zernike_deg{degree}"] = np.mean(zm_vector)
     return features
 
 def extract_wavelet_features(image):
-    """
-    Apply a discrete Haar wavelet transform to the grayscale image
-    and compute the mean and std of the approximation coefficients.
-    """
     gray = color.rgb2gray(image)
     coeffs = pywt.dwt2(gray, 'haar')
     cA, (cH, cV, cD) = coeffs
@@ -149,10 +120,6 @@ def extract_wavelet_features(image):
     return features
 
 def extract_haralick_features(image):
-    """
-    Compute Haralick texture features (contrast, correlation, energy, homogeneity)
-    using the GLCM.
-    """
     gray = color.rgb2gray(image)
     gray_uint8 = (gray * 255).astype(np.uint8)
     glcm = feature.graycomatrix(gray_uint8, distances=[1], angles=[0, np.pi/4, np.pi/2, 3*np.pi/4],
@@ -164,9 +131,6 @@ def extract_haralick_features(image):
         features[f"haralick_{prop}"] = np.mean(feat)
     return features
 
-# --------------------------
-# Combined Feature Extraction Dictionary
-# --------------------------
 def extract_features_dict(image):
     """
     Extract all features from an image and return a dictionary with descriptive keys.
@@ -187,9 +151,6 @@ def extract_features_dict(image):
     
     return features
 
-# --------------------------
-# Main Processing Loop
-# --------------------------
 cleaned_data_path = 'Data/bloodcells_dataset_cleaned'
 cell_types = ['basophil', 'eosinophil', 'erythroblast', 'ig', 'lymphocyte', 'monocyte', 'neutrophil', 'platelet']
 

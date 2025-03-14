@@ -1,11 +1,11 @@
+dill
 lime
 matplotlib
 mahotas
 numpy
 pandas
-pickle
 scikit-image
 scikit-learn
 seaborn
-pywt
+PyWavelets
 xgboost

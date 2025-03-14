@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Analysis Result</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Analysis Result</h1>
+    <div class="result-container">
+        <div class="image-container">
+            <h2>Uploaded Image</h2>
+            <img src="{{ url_for('static', filename='uploads/' + image_file) }}" alt="Uploaded Image" width="300">
+        </div>
+        <div class="details-container">
+            <h2>Prediction</h2>
+            <p><strong>Classification:</strong> {{ classification }}</p>
+            <h2>Anomaly Score</h2>
+            <p><strong>Score:</strong> {{ anomaly_score }}</p>
+            <p>{{ anomaly_explanation }}</p>
+            <h2>LIME Explanation (Top 10 Features)</h2>
+            <pre>{{ lime_explanation }}</pre>
+        </div>
+    </div>
+    <br>
+    <a href="{{ url_for('index') }}">Analyze another image</a>
+</body>
+</html>
