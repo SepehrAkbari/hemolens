@@ -61,16 +61,32 @@ def analyze():
     features_scaled = scaler.transform(feature_vector)
 
     pred_encoded = model_xgb.predict(features_scaled)[0]
-    classification = str(pred_encoded)
+
+    if pred_encoded == 0:
+        classification = "BASOPHIL"
+    elif pred_encoded == 1:
+        classification = "EOSINOPHIL"
+    elif pred_encoded == 2:
+        classification = "ERYTHROBLAST"
+    elif pred_encoded == 3:
+        classification = "IG"
+    elif pred_encoded == 4:
+        classification = "LYMPHOCYTE"
+    elif pred_encoded == 5:
+        classification = "MONOCYTE"
+    elif pred_encoded == 6:
+        classification = "NEUTROPHIL"
+    elif pred_encoded == 7:
+        classification = "PLATELET"
+    else:
+        classification = "UNKNOWN... Please try again."
 
     anomaly_score = model_isol.decision_function(features_scaled)[0]
     anomaly_explanation = "This cell appears to be normal: features extracted follow our standard deviation" if anomaly_score >= 0 else "This cell appears to be POTENTIALLY ANOMALOUS: features extracted do not follow our standard deviation"
 
-    # Generate a LIME explanation using all features for detailed aggregation.
     exp = lime_explainer.explain_instance(features_scaled[0], model_xgb.predict_proba, num_features=15935)
     lime_explanation = exp.as_list()
 
-    # Aggregate contributions by feature group.
     group_sums = {}
     group_counts = {}
 
@@ -102,11 +118,9 @@ def analyze():
         group_sums[group] = group_sums.get(group, 0) + abs(score)
         group_counts[group] = group_counts.get(group, 0) + 1
 
-    # List all expected groups.
     all_groups = ["Color Histogram", "HOG", "LBP", "Gabor", "GIST", 
                 "Hu Moments", "Zernike Moments", "Wavelet", "Haralick"]
 
-    # Compute average contribution for each group and store them in a list.
     results_list = []
     for group in all_groups:
         total = group_sums.get(group, 0)
@@ -114,12 +128,9 @@ def analyze():
         avg = total / count if count > 0 else 0
         results_list.append((group, avg))
 
-    # Sort the list by average contribution in descending order.
     results_list = sorted(results_list, key=lambda x: x[1], reverse=True)
 
-    # Build the final text string in the desired format.
     lime_text = "\n".join([f"{i+1}- {group} ({avg:.4f})" for i, (group, avg) in enumerate(results_list)])
-
 
     return render_template("result.html",
                            image_file=filename,
