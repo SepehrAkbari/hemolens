@@ -26,7 +26,7 @@ To run the project, first clone the repository:
 
 ```bash
 git clone https://github.com/SepehrAkbari/BloodCells
-cd Stop-the-Churn
+cd BloodCells
 ```
 
 Install the required libraries:
