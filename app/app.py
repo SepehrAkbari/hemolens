@@ -6,18 +6,18 @@ import numpy as np
 from skimage import io
 from werkzeug.utils import secure_filename
 
-from Models.ExtractFeature import FeatureExtractor
+from models.ExtractFeature import FeatureExtractor
 
-app = Flask(__name__, template_folder="Template", static_folder="Static")
+app = Flask(__name__, template_folder="template", static_folder="static")
 
-with open(os.path.join("Models", "model_xgb.pkl"), "rb") as f:
+with open(os.path.join("models", "model_xgb.pkl"), "rb") as f:
     model_xgb = pickle.load(f)
-with open(os.path.join("Models", "model_isol.pkl"), "rb") as f:
+with open(os.path.join("models", "model_isol.pkl"), "rb") as f:
     model_isol = pickle.load(f)
-with open(os.path.join("Models", "scaler.pkl"), "rb") as f:
+with open(os.path.join("models", "scaler.pkl"), "rb") as f:
     scaler = pickle.load(f)
     
-with open(os.path.join("Models", "lime_explainer.pkl"), "rb") as f:
+with open(os.path.join("models", "lime_explainer.pkl"), "rb") as f:
     lime_explainer = dill.load(f)
 
 class CustomUnpickler(dill.Unpickler):
@@ -29,7 +29,7 @@ class CustomUnpickler(dill.Unpickler):
 def custom_load(file_obj):
     return CustomUnpickler(file_obj).load()
 
-with open(os.path.join("Models", "feature_extractor.pkl"), "rb") as f:
+with open(os.path.join("models", "feature_extractor.pkl"), "rb") as f:
     feature_extractor = custom_load(f)
 
 UPLOAD_FOLDER = os.path.join(app.static_folder, "uploads")

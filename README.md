@@ -25,8 +25,8 @@ The dataset used in this project is sourced from 17000 blood cell images, using 
 To run the project, first clone the repository:
 
 ```bash
-git clone https://github.com/SepehrAkbari/BloodCells
-cd Stop-the-Churn
+git clone https://github.com/SepehrAkbari/hemolens.git
+cd hemolens
 ```
 
 Install the required libraries:
@@ -35,21 +35,22 @@ Install the required libraries:
 pip install -r requirements.txt
 ```
 
-To explore the analysis, run the Jupyter Notebook located in the `Notebook` folder:
+To explore the analysis, run the Jupyter Notebook located in the `notebook` folder:
 
 ```bash
-jupyter notebook Notebooks/main.ipynb
+Jupyter notebook notebooks/hemolens.ipynb
 ```
 
 To launch the Flask app:
 
 ```bash
+cd app
 flask run
 ```
 
 ## Computation Consideration
 
-Setions of the project notebook which include code for data cleaning and feature extraction, are extremely computationally expensive. The recommended appraoch is to run sections 2.3, 6, and one's marked by commented code, on a GPU enabled cluster computing environment.
+Sections of the project notebook which include code for data cleaning and feature extraction, are extremely computationally expensive. The recommended approach is to run sections 2.3, 6, and one's marked by commented code, on a GPU enabled cluster computing environment.
 
 ## Approach
 
@@ -97,9 +98,9 @@ Setions of the project notebook which include code for data cleaning and feature
 
   - The XGBoost, IsolationForest, and LIME Explainer, were deployed via a Flask web app, allowing administrators to input blood cells images and receive real-time analysis reports.
 
-## Theoratical Explanation
+## Theoretical Explanation
 
-Functions used for Segmentation, and all feature extractions are explained in the `Notebooks` folder in detail. Here is a brief summary of each:
+Functions used for Segmentation, and all feature extractions are explained in the `notebooks` folder in detail. Here is a brief summary of each:
 
 - **Segmentation:** In this project, we will perform segmentation through a technique called thresholding. Specifically, using the Otsu thresholding method. Thresholding is a common preprocessing technique for images wherein a grayscale image is binarized based on pixel intensities. If the intensity of an input pixel is greater than the threshold, the corresponding output pixel is marked as white (foreground), and if the input pixel is less than or equal to the threshold, the output pixel location is marked black (background). The Otsu method is an adaptive thresholding technique that automatically calculates the optimal threshold value based on the image's histogram.
 

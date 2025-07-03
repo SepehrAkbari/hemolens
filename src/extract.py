@@ -1,34 +1,69 @@
-import os
-import numpy as np
-import pandas as pd
-import random
-import matplotlib.pyplot as plt
-from skimage import io, color, filters, morphology, measure, util, feature
-from skimage.filters import gaussian, median, gabor
-from skimage.morphology import disk
-from skimage.feature import hog, local_binary_pattern, graycomatrix, graycoprops
-import pywt
 import math
+import os
 import warnings
 import mahotas
+import numpy as np
+import pandas as pd
+import pywt
+from skimage import color, exposure, filters, io, morphology, measure, transform, util, feature
+from skimage.feature import graycomatrix, graycoprops, hog, local_binary_pattern
+from skimage.filters import gaussian, gabor, median
+from skimage.morphology import disk
 
 warnings.filterwarnings('ignore')
 
+rs = 450
+
+original_data_path = '../Data/bloodcells_dataset'
+cleaned_data_path = '../Data/bloodcells_dataset_cleaned'
+
+cell_types = ['basophil', 'eosinophil', 'erythroblast', 'ig', 'lymphocyte', 'monocyte', 'neutrophil', 'platelet']
+
+def imNormalize(image):
+    if len(image.shape) == 2:
+        r = image
+        g = image
+        b = image
+    else:
+        r = image[:, :, 0]
+        g = image[:, :, 1]
+        b = image[:, :, 2]
+    
+    r = r - r.min()
+    r = r / r.max()
+    r = np.uint8(r * 255)
+    
+    g = g - g.min()
+    g = g / g.max()
+    g = np.uint8(g * 255)
+    
+    b = b - b.min()
+    b = b / b.max()
+    b = np.uint8(b * 255)
+    
+    return np.stack((r, g, b), axis=2)
+
 def segment_cell(image, sigma=1, median_size=3, min_size=50, hole_area=50):
     gray_image = color.rgb2gray(image)
+    
     smooth_image = gaussian(gray_image, sigma=sigma)
     smooth_image = median(smooth_image)
+    
     thresh = filters.threshold_otsu(smooth_image)
+    
     mask = smooth_image < thresh
     mask = morphology.remove_small_objects(mask, min_size=min_size)
     mask = morphology.remove_small_holes(mask, area_threshold=hole_area)
+    
     labels = measure.label(mask)
     if labels.max() != 0:
         regions = measure.regionprops(labels)
         largest_region = max(regions, key=lambda r: r.area)
         mask = labels == largest_region.label
+
     segmented = image.copy()
     segmented[~mask] = 0
+
     return segmented, mask
 
 def extract_color_histogram(image, num_bins=8):
@@ -132,27 +167,21 @@ def extract_haralick_features(image):
     return features
 
 def extract_features_dict(image):
-    """
-    Extract all features from an image and return a dictionary with descriptive keys.
-    """
     segmented, mask = segment_cell(image)
     
     features = {}
+
     features.update(extract_color_histogram(segmented, num_bins=8))
     features.update(extract_hog_features(segmented, pixels_per_cell=(16,16), cells_per_block=(2,2), orientations=9))
     features.update(extract_lbp_features(segmented, radius=1, n_points=8, num_bins=10))
     features.update(extract_gabor_features(segmented, frequency=0.6))
     features.update(extract_gist_features_with_keys(segmented, num_blocks=1, frequencies=[0.1, 0.3], thetas=[0, np.pi/2]))
     features.update(extract_hu_moments(mask))
-    radius_val = min(mask.shape) / 2
-    features.update(extract_zernike_moments(mask, radius_val, degree_list=[2,4]))
+    features.update(extract_zernike_moments(mask, min(mask.shape) / 2, degree_list=[2,4]))
     features.update(extract_wavelet_features(segmented))
     features.update(extract_haralick_features(segmented))
     
     return features
-
-cleaned_data_path = 'Data/bloodcells_dataset_cleaned'
-cell_types = ['basophil', 'eosinophil', 'erythroblast', 'ig', 'lymphocyte', 'monocyte', 'neutrophil', 'platelet']
 
 data_records = []
 
@@ -178,7 +207,7 @@ for cell_type in cell_types:
         except Exception as e:
             print(f"Error processing {file_path}: {e}")
     print(f"{cell_type} done!\n")
-
+    
 print("\nSaving...")
 
 df = pd.DataFrame(data_records)
