@@ -28,7 +28,6 @@ To run the project, first clone the repository:
 git clone https://github.com/SepehrAkbari/hemolens.git
 cd hemolens
 ```
-
 Install the required libraries:
 
 ```bash
