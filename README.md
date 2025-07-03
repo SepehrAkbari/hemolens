@@ -10,11 +10,11 @@ This exploration covers data preprocessing, feature selection and extraction, mo
 
 Inputting blood cell image:
 
-![Input](Demo/page1.jpeg)
+![Input](app/demo/page1.jpeg)
 
 Analysis results:
 
-![Predictions](Demo/page2.jpeg)
+![Predictions](app/demo/page2.jpeg)
 
 ## Data
 
