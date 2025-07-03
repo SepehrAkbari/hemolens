@@ -1,4 +1,4 @@
-# Blood Cells Analysis Model
+# Hemo Lens: Blood Cell Analysis Pipeline
 
 Detecting the type of blood cell in microscopic images is a common task in laboratories. This project aims to classify blood cell images into eight categories, and furthermore use models to detect anomalies in the images. The vision of this project is to demonstrate a tool used by lab technicians to classify and blood cells based on specific image features.
 
